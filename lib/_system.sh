@@ -82,16 +82,18 @@ EOF
 #######################################
 system_copy_project() {
   print_banner
-  printf "${WHITE} 💻 Copiando o Backend e Frontend...${GRAY_LIGHT}"
+  printf "${WHITE} 💻 Copiando o Backend e Frontend...${GRAY_LIGHT} - ${instancia_add} - ${PROJECT_ROOT}"
   printf "\n\n"
 
   sleep 2
 
   sudo su - deploy <<EOF
+  rm -r -f /home/deploy/${instancia_add}/backend
   cp -r "${PROJECT_ROOT}"/backend /home/deploy/${instancia_add}/
 
   sleep 2
 
+  rm -r /home/deploy/${instancia_add}/front
   cp -r "${PROJECT_ROOT}"/frontend /home/deploy/${instancia_add}/
 EOF
 

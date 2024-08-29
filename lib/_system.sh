@@ -82,8 +82,10 @@ EOF
 #######################################
 system_copy_project() {
   print_banner
-  printf "${WHITE} 💻 Copiando o Backend e Frontend...${GRAY_LIGHT} - ${instancia_add} - ${PROJECT_ROOT}"
+  printf "${WHITE} 💻 Copiando o Backend e Frontend...${GRAY_LIGHT}"
+  printf "${WHITE} 💻 Informe um nome para a Instância/Empresa que será instalada (Não utilizar espaços ou caracteres especiais; utilizar letras minusculas):${GRAY_LIGHT}"
   printf "\n\n"
+  read -p "> " instancia_add
 
   sleep 2
 
@@ -93,7 +95,7 @@ system_copy_project() {
 
   sleep 2
 
-  rm -r /home/deploy/${instancia_add}/front
+  rm -r /home/deploy/${instancia_add}/frontend
   cp -r "${PROJECT_ROOT}"/frontend /home/deploy/${instancia_add}/
 EOF
 

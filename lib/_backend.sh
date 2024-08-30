@@ -222,7 +222,6 @@ backend_start_pm2() {
     printf "${WHITE} 💻 Digite o nome da Instância/Empresa que deseja Atualizar (Digite o mesmo nome de quando instalou):${GRAY_LIGHT}"
     printf "\n\n"
     read -p "> " instancia_add
-    exit 1
   fi
 
   sleep 2
@@ -251,7 +250,6 @@ backend_nginx_setup() {
     printf "${WHITE} 💻 Digite o nome da Instância/Empresa que deseja Atualizar (Digite o mesmo nome de quando instalou):${GRAY_LIGHT}"
     printf "\n\n"
     read -p "> " instancia_add
-    exit 1
   fi
 
   sleep 2

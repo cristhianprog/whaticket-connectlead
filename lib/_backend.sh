@@ -150,7 +150,7 @@ backend_update() {
 
   sleep 2
 
-  sudo su - deploy <<EOF
+  sudo su - root <<EOF
   cd /home/deploy/${empresa_atualizar}/backend
   npm -f install
   npm update -f

@@ -54,7 +54,7 @@ frontend_update() {
 
   sleep 2
 
-  sudo su - deploy <<EOF
+  sudo su - root <<EOF
   cd /home/deploy/${empresa_atualizar}/frontend
   npm -f install
   rm -rf build

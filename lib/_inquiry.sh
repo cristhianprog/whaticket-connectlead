@@ -173,6 +173,8 @@ software_update() {
   system_copy_project
   frontend_update
   backend_update
+  frontend_start_pm2
+  backend_start_pm2
 }
 
 software_delete() {

@@ -83,25 +83,32 @@ EOF
 system_copy_project() {
   print_banner
   printf "${WHITE} 💻 Copiando o Backend e Frontend...${GRAY_LIGHT}"
+  printf "\n"
   printf "${WHITE} 💻 Informe um nome para a Instância/Empresa que será instalada (Não utilizar espaços ou caracteres especiais; utilizar letras minusculas):${GRAY_LIGHT}"
   printf "\n\n"
-  read -p "> " instancia_add
+  read -p "> " empresa_atualizar
 
   sleep 2
 
-  sudo su - deploy <<EOF
-  rm -r -f /home/deploy/${instancia_add}/backend
-  cp -r "${PROJECT_ROOT}"/backend /home/deploy/${instancia_add}/
+  sudo su <<EOF
+  pm2 stop ${empresa_atualizar}-backend
+  pm2 stop ${empresa_atualizar}-frontend
+
+  rm -r -f /home/deploy/${empresa_atualizar}/
+  mkdir /home/deploy/${empresa_atualizar}/
 
   sleep 2
 
-  rm -r /home/deploy/${instancia_add}/frontend
-  cp -r "${PROJECT_ROOT}"/frontend /home/deploy/${instancia_add}/
+  cp -r "${PROJECT_ROOT}"/backend /home/deploy/${empresa_atualizar}/
+
+  sleep 2
+
+  cp -r "${PROJECT_ROOT}"/frontend /home/deploy/${empresa_atualizar}/
 EOF
 
   sleep 2
 
-  sudo chmod -R 777 /home/deploy/${instancia_add}/backend/public/
+  sudo chmod -R 777 /home/deploy/${empresa_atualizar}/backend/public/
   sleep
 }
 

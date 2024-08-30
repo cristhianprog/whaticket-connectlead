@@ -144,9 +144,6 @@ backend_update() {
   sleep 2
 
   sudo su - deploy <<EOF
-  cd /home/deploy/${empresa_atualizar}
-  pm2 stop ${empresa_atualizar}-backend
-  git pull
   cd /home/deploy/${empresa_atualizar}/backend
   npm -f install
   npm update -f
@@ -155,8 +152,7 @@ backend_update() {
   npm run build
   npx sequelize db:migrate
   npx sequelize db:seed
-  pm2 start ${empresa_atualizar}-backend
-  pm2 save 
+
 EOF
 
   sleep 2

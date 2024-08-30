@@ -175,6 +175,8 @@ software_update() {
   backend_update
   frontend_start_pm2
   backend_start_pm2
+  frontend_nginx_setup
+  frontend_nginx_setup
 }
 
 software_delete() {

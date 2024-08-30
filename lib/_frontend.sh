@@ -120,6 +120,15 @@ frontend_start_pm2() {
   printf "${WHITE} 💻 Iniciando pm2 (frontend)...${GRAY_LIGHT}"
   printf "\n\n"
 
+   # Verifica se a variável 'instancia_add' é nula ou tem tamanho zero
+  if [ -z "$instancia_add" ]; then
+    echo "A variável 'instancia_add' está vazia ou não foi definida. Saindo..."
+    printf "${WHITE} 💻 Digite o nome da Instância/Empresa que deseja Atualizar (Digite o mesmo nome de quando instalou):${GRAY_LIGHT}"
+    printf "\n\n"
+    read -p "> " instancia_add
+    exit 1
+  fi
+
   sleep 2
 
   sudo su - deploy <<EOF
@@ -146,6 +155,15 @@ frontend_nginx_setup() {
   print_banner
   printf "${WHITE} 💻 Configurando nginx (frontend)...${GRAY_LIGHT}"
   printf "\n\n"
+
+ # Verifica se a variável 'instancia_add' é nula ou tem tamanho zero
+  if [ -z "$instancia_add" ]; then
+    echo "A variável 'instancia_add' está vazia ou não foi definida. Saindo..."
+    printf "${WHITE} 💻 Digite o nome da Instância/Empresa que deseja Atualizar (Digite o mesmo nome de quando instalou):${GRAY_LIGHT}"
+    printf "\n\n"
+    read -p "> " instancia_add
+    exit 1
+  fi
 
   sleep 2
 

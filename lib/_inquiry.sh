@@ -170,7 +170,7 @@ get_urls() {
 
 software_update() {
   get_empresa_atualizar
-  system_copy_project
+  system_copy_project_update
   frontend_update
   backend_update
   frontend_start_pm2
@@ -242,6 +242,39 @@ inquiry_options() {
 
     *) exit ;;
   esac
+}
+
+
+system_copy_project_update() {
+  print_banner
+  printf "${WHITE} 💻 Copiando o Backend e Frontend...${GRAY_LIGHT}"
+  printf "\n"
+  printf "${WHITE} 💻 Informe um nome para a Instância/Empresa que será instalada (Não utilizar espaços ou caracteres especiais; utilizar letras minusculas):${GRAY_LIGHT}"
+  printf "\n\n"
+  read -p "> " empresa_atualizar
+
+  sleep 2
+
+  sudo su - deploy <<EOF
+  pm2 stop ${empresa_atualizar}-backend
+  pm2 stop ${empresa_atualizar}-frontend
+
+  rm -r -f /home/deploy/${empresa_atualizar}/
+  mkdir /home/deploy/${empresa_atualizar}/
+
+  sleep 2
+
+  cp -r "${PROJECT_ROOT}"/backend /home/deploy/${empresa_atualizar}/
+
+  sleep 2
+
+  cp -r "${PROJECT_ROOT}"/frontend /home/deploy/${empresa_atualizar}/
+EOF
+
+  sleep 2
+
+  sudo chmod -R 777 /home/deploy/${empresa_atualizar}/backend/public/
+  sleep
 }
 
 

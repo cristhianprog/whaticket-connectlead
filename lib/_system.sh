@@ -90,14 +90,7 @@ system_copy_project() {
 
   sleep 2
 
-  sudo su <<EOF
-  pm2 stop ${empresa_atualizar}-backend
-  pm2 stop ${empresa_atualizar}-frontend
-
-  rm -r -f /home/deploy/${empresa_atualizar}/
-  mkdir /home/deploy/${empresa_atualizar}/
-
-  sleep 2
+  sudo su - deploy <<EOF
 
   cp -r "${PROJECT_ROOT}"/backend /home/deploy/${empresa_atualizar}/
 

@@ -85,6 +85,13 @@ GERENCIANET_CLIENT_SECRET=sua_chave_secreta
 GERENCIANET_PIX_CERT=nome_do_certificado
 GERENCIANET_PIX_KEY=chave_pix_gerencianet
 
+# EMAIL
+MAIL_HOST="smtp.hostinger.com"
+MAIL_USER="contato@connectlead.app.br"
+MAIL_PASS="Jacq608@"
+MAIL_FROM="contato@connectlead.app.br"
+MAIL_PORT="465"
+
 [-]EOF
 EOF
 

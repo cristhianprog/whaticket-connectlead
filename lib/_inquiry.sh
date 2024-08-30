@@ -255,7 +255,7 @@ system_copy_project_update() {
 
   sleep 2
 
-  sudo su - deploy <<EOF
+  sudo su - root <<EOF
   pm2 stop ${empresa_atualizar}-backend
   pm2 stop ${empresa_atualizar}-frontend
 

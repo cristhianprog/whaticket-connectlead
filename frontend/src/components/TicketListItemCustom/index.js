@@ -31,6 +31,7 @@ import AndroidIcon from "@material-ui/icons/Android";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import ContactTag from "../ContactTag";
 import TicketMessagesDialog from "../TicketMessagesDialog";
+import { displayName } from "qrcode.react";
 
 const useStyles = makeStyles((theme) => ({
   ticket: {
@@ -84,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 5,
     paddingRight: 5,
     borderRadius: 3,
-    fontSize: "0.8em",
+    fontSize: "0.6em",
     whiteSpace: "nowrap"
   },
   noTicketsTitle: {
@@ -104,15 +105,18 @@ const useStyles = makeStyles((theme) => ({
     justifySelf: "flex-end",
     textAlign: "right",
     position: "relative",
+    left: 15,
     top: -21,
-    background: '#333333',
-    color: '#ffffff',
-    border: '1px solid #3a3b6c',
-    borderRadius: 5,
+    background: '#4caf50',
+    color: '#fff',
+    border: '1px solid #4caf50',
+    fontWeight: 'bold',
+    borderRadius: 10,
     padding: 1,
     paddingLeft: 5,
     paddingRight: 5,
-    fontSize: '0.9em',
+    fontSize: '0.6em',
+    marginTop: 18
   },
 
   closedBadge: {
@@ -186,8 +190,8 @@ const useStyles = makeStyles((theme) => ({
 
   }
 }));
-  {/*PLW DESIGN INSERIDO O dentro do const handleChangeTab*/}
-  const TicketListItemCustom = ({ ticket }) => {
+{/*PLW DESIGN INSERIDO O dentro do const handleChangeTab*/ }
+const TicketListItemCustom = ({ ticket }) => {
   const classes = useStyles();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
@@ -224,7 +228,7 @@ const useStyles = makeStyles((theme) => ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  {/*CÓDIGO NOVO SAUDAÇÃO*/}
+  {/*CÓDIGO NOVO SAUDAÇÃO*/ }
   const handleCloseTicket = async (id) => {
     setTag(ticket?.tags);
     setLoading(true);
@@ -262,16 +266,16 @@ const useStyles = makeStyles((theme) => ({
 
 
       if (minutesDifference >= 3 && minutesDifference <= 10) {
-        labelText = `(${minutesDifference} m atrás)`;
+        labelText = `(Há ${minutesDifference}m)`;
         labelColor = 'green';
       } else if (minutesDifference >= 30 && minutesDifference < 60) {
-        labelText = `(${minutesDifference} m atrás)`;
+        labelText = `(Há ${minutesDifference}m)`;
         labelColor = 'Orange';
-      } else if (minutesDifference > 60  && hoursDifference < 24) {
-        labelText = `(${hoursDifference} h atrás)`;
+      } else if (minutesDifference > 60 && hoursDifference < 24) {
+        labelText = `(Há ${hoursDifference}h)`;
         labelColor = 'red';
       } else if (hoursDifference >= 24) {
-        labelText = `(${Math.floor(hoursDifference / 24)} dias atrás)`;
+        labelText = `(Há ${Math.floor(hoursDifference / 24)} dias)`;
         labelColor = 'red';
       }
 
@@ -317,62 +321,62 @@ const useStyles = makeStyles((theme) => ({
     history.push(`/tickets/${ticket.uuid}`);
   };
 
-    const handleAcepptTicket = async (id) => {
-        setLoading(true);
-        try {
-            await api.put(`/tickets/${id}`, {
-                status: "open",
-                userId: user?.id,
-            });
-            
-            let settingIndex;
+  const handleAcepptTicket = async (id) => {
+    setLoading(true);
+    try {
+      await api.put(`/tickets/${id}`, {
+        status: "open",
+        userId: user?.id,
+      });
 
-            try {
-                const { data } = await api.get("/settings/");
-                
-                settingIndex = data.filter((s) => s.key === "sendGreetingAccepted");
-                
-            } catch (err) {
-                toastError(err);
-                   
-            }
-            
-            if (settingIndex[0].value === "enabled" && !ticket.isGroup) {
-                handleSendMessage(ticket.id);
-                
-            }
+      let settingIndex;
 
-        } catch (err) {
-            setLoading(false);
-            
-            toastError(err);
-        }
-        if (isMounted.current) {
-            setLoading(false);
-        }
+      try {
+        const { data } = await api.get("/settings/");
 
-        // handleChangeTab(null, "tickets");
-        // handleChangeTab(null, "open");
-        history.push(`/tickets/${ticket.uuid}`);
+        settingIndex = data.filter((s) => s.key === "sendGreetingAccepted");
+
+      } catch (err) {
+        toastError(err);
+
+      }
+
+      if (settingIndex[0].value === "enabled" && !ticket.isGroup) {
+        handleSendMessage(ticket.id);
+
+      }
+
+    } catch (err) {
+      setLoading(false);
+
+      toastError(err);
+    }
+    if (isMounted.current) {
+      setLoading(false);
+    }
+
+    // handleChangeTab(null, "tickets");
+    // handleChangeTab(null, "open");
+    history.push(`/tickets/${ticket.uuid}`);
+  };
+
+  const handleSendMessage = async (id) => {
+
+    const msg = `{{ms}} *{{name}}*, meu nome é *${user?.name}* e agora vou prosseguir com seu atendimento!`;
+    const message = {
+      read: 1,
+      fromMe: true,
+      mediaUrl: "",
+      body: `*Mensagem Automática:*\n${msg.trim()}`,
     };
-	
-	    const handleSendMessage = async (id) => {
-        
-        const msg = `{{ms}} *{{name}}*, meu nome é *${user?.name}* e agora vou prosseguir com seu atendimento!`;
-        const message = {
-            read: 1,
-            fromMe: true,
-            mediaUrl: "",
-            body: `*Mensagem Automática:*\n${msg.trim()}`,
-        };
-        try {
-            await api.post(`/messages/${id}`, message);
-        } catch (err) {
-            toastError(err);
-            
-        }
-    };
-	{/*CÓDIGO NOVO SAUDAÇÃO*/}
+    try {
+      await api.post(`/messages/${id}`, message);
+    } catch (err) {
+      toastError(err);
+
+    }
+  };
+  {/*CÓDIGO NOVO SAUDAÇÃO*/ }
 
   const handleSelectTicket = (ticket) => {
     const code = uuidv4();
@@ -428,6 +432,7 @@ const useStyles = makeStyles((theme) => ({
           handleSelectTicket(ticket);
         }}
         selected={ticketId && +ticketId === ticket.id}
+        style={{ boxShadow: "2px 0px 5px 0px #7c7c7c", marginBottom: 1}}
         className={clsx(classes.ticket, {
           [classes.pendingTicket]: ticket.status === "pending",
         })}
@@ -439,22 +444,22 @@ const useStyles = makeStyles((theme) => ({
           {ticket.status !== "pending" ?
             <Avatar
               style={{
-                marginTop: "-20px",
+                marginTop: "0px",
                 marginLeft: "-3px",
-                width: "55px",
-                height: "55px",
-                borderRadius: "10%",
+                width: "58px",
+                height: "58px",
+                borderRadius: "50%",
               }}
               src={ticket?.contact?.profilePicUrl}
             />
             :
             <Avatar
               style={{
-                marginTop: "-30px",
+                marginTop: "-20px",
                 marginLeft: "0px",
-                width: "50px",
-                height: "50px",
-                borderRadius: "10%",
+                width: "56px",
+                height: "56px",
+                borderRadius: "50%",
               }}
               src={ticket?.contact?.profilePicUrl}
             />
@@ -465,23 +470,19 @@ const useStyles = makeStyles((theme) => ({
 
           primary={
             <span className={classes.contactNameWrapper}>
-            <Typography
-            noWrap
-            component='span'
-            variant='body2'
-            color='textPrimary'
-          >
-            <strong>{ticket.contact.name} {lastInteractionLabel}</strong>
-        <ListItemSecondaryAction>
-          <Box className={classes.ticketInfo1}>{renderTicketInfo()}</Box>
-        </ListItemSecondaryAction>
+              <Typography
+                noWrap
+                component='span'
+                variant='body2'
+                color='textPrimary'
+              >
                 {profile === "admin" && (
                   <Tooltip title="Espiar Conversa">
                     <VisibilityIcon
                       onClick={() => setOpenTicketMessageDialog(true)}
                       fontSize="small"
                       style={{
-                        color: blue[700],
+                        color: grey[500],
                         cursor: "pointer",
                         marginLeft: 10,
                         verticalAlign: "middle"
@@ -489,8 +490,24 @@ const useStyles = makeStyles((theme) => ({
                     />
                   </Tooltip>
                 )}
+                <Tooltip title={
+                  <>
+                    {ticket.contact.name} {lastInteractionLabel}
+                  </>
+                }>
+                  <strong style={{
+                    marginRight: 10,
+                    marginLeft: 10,
+                    fontSize: 13,
+                    fontWeight: 600
+                  }}>{ticket.contact.name} {lastInteractionLabel}</strong>
+                </Tooltip>
+                <ListItemSecondaryAction>
+                  <Box className={classes.ticketInfo1}>{renderTicketInfo()}</Box>
+                </ListItemSecondaryAction>
+
               </Typography>
-        </span>
+            </span>
 
           }
           secondary={
@@ -502,26 +519,27 @@ const useStyles = makeStyles((theme) => ({
                 component="span"
                 variant="body2"
                 color="textSecondary"
-              > {ticket.lastMessage && ticket.lastMessage.includes('data:image/png;base64') ? 
-              <MarkdownWrapper> Localização</MarkdownWrapper> : 
-              <MarkdownWrapper>{ticket.lastMessage}</MarkdownWrapper>
-            }
+              >
+                {ticket.lastMessage && ticket.lastMessage.includes('data:image/png;base64') ?
+                  <MarkdownWrapper> Localização</MarkdownWrapper> :
+                  <MarkdownWrapper>{ticket.lastMessage}</MarkdownWrapper>
+                }
 
-            {ticket.lastMessage && verpreview ? (
-              <>
-                {ticket.lastMessage.includes('VCARD') ? (
-                  <MarkdownWrapper>Novo Contato recebido</MarkdownWrapper>
-                ) : ticket.lastMessage.includes('data:image') ? (
-                  <MarkdownWrapper>Localização recebida</MarkdownWrapper>
+                {ticket.lastMessage && verpreview ? (
+                  <>
+                    {ticket.lastMessage.includes('VCARD') ? (
+                      <MarkdownWrapper>Novo Contato recebido</MarkdownWrapper>
+                    ) : ticket.lastMessage.includes('data:image') ? (
+                      <MarkdownWrapper>Localização recebida</MarkdownWrapper>
+                    ) : (
+                      <MarkdownWrapper>
+                        {ticket.lastMessage.slice(0, 20) + '...'}
+                      </MarkdownWrapper>
+                    )}
+                  </>
                 ) : (
-                  <MarkdownWrapper>
-                    {ticket.lastMessage.slice(0, 20) + '...'}
-                  </MarkdownWrapper>
+                  <MarkdownWrapper>---</MarkdownWrapper>
                 )}
-              </>
-            ) : (
-              <MarkdownWrapper>---</MarkdownWrapper>
-            )}
 
                 <span className={classes.secondaryContentSecond} >
                   {ticket?.whatsapp?.name ? <Badge className={classes.connectionTag}>{ticket?.whatsapp?.name?.toUpperCase()}</Badge> : <br></br>}
@@ -548,64 +566,70 @@ const useStyles = makeStyles((theme) => ({
           }
 
         />
-        <ListItemSecondaryAction>
-          {ticket.lastMessage && (
-            <>
+        <ListItemSecondaryAction style={{ textAlign: 'right'}}>
+          <Box style={{display: 'block', marginTop: 16, width: 58, height: 56, marginRight: 2 }}>
+            {ticket.lastMessage && (
+              <>
 
-              <Typography
-                className={classes.lastMessageTime}
-                component="span"
-                variant="body2"
-                color="textSecondary"
-              >
+                <Typography
+                  className={classes.lastMessageTime}
+                  component="span"
+                  variant="body2"
+                  color="textSecondary"
+                >
 
-                {isSameDay(parseISO(ticket.updatedAt), new Date()) ? (
-                  <>{format(parseISO(ticket.updatedAt), "HH:mm")}</>
-                ) : (
-                  <>{format(parseISO(ticket.updatedAt), "dd/MM/yyyy")}</>
-                )}
-              </Typography>
+                  {isSameDay(parseISO(ticket.updatedAt), new Date()) ? (
+                    <>{format(parseISO(ticket.updatedAt), "HH:mm")}</>
+                  ) : (
+                    <>{format(parseISO(ticket.updatedAt), "dd/MM/yyyy")}</>
+                  )}
+                </Typography>
 
-              <br />
+                <br />
 
-            </>
-          )}
+              </>
+            )}
+            <Typography>
+              {(ticket.status !== "closed") && (
+                <ButtonWithSpinner
+                  //color="primary"
+                  style={{ backgroundColor: 'red', color: 'white', padding: '0px', bottom: '0px', borderRadius: '3px', left: '8px', fontSize: '0.6rem' }}
+                  variant="contained"
+                  className={classes.acceptButton}
+                  size="small"
+                  loading={loading}
+                  onClick={e => handleCloseTicket(ticket.id)}
+                >
+                  {i18n.t("ticketsList.buttons.closed")}
+                </ButtonWithSpinner>
+
+              )}
+            </Typography>
+
+          </Box>
 
         </ListItemSecondaryAction>
         <span className={classes.secondaryContentSecond} >
           {ticket.status === "pending" && (
             <ButtonWithSpinner
               //color="primary"
-              style={{ backgroundColor: 'green', color: 'white', padding: '0px', bottom: '17px', borderRadius: '0px', left: '8px', fontSize: '0.6rem' }}
+              style={{ backgroundColor: '#5271ff', color: 'white', padding: '0px', bottom: '6px', borderRadius: '3px', left: '12px', fontSize: '0.6rem' }}
               variant="contained"
               className={classes.acceptButton}
               size="small"
               loading={loading}
-			  //PLW DESIGN INSERIDO O handleChangeTab
+              //PLW DESIGN INSERIDO O handleChangeTab
               onClick={e => handleAcepptTicket(ticket.id)}
             >
               {i18n.t("ticketsList.buttons.accept")}
             </ButtonWithSpinner>
 
           )}
-          {(ticket.status !== "closed") && (
-            <ButtonWithSpinner
-              //color="primary"
-              style={{ backgroundColor: 'red', color: 'white', padding: '0px', bottom: '0px', borderRadius: '0px', left: '8px', fontSize: '0.6rem' }}
-              variant="contained"
-              className={classes.acceptButton}
-              size="small"
-              loading={loading}
-              onClick={e => handleCloseTicket(ticket.id)}
-            >
-              {i18n.t("ticketsList.buttons.closed")}
-            </ButtonWithSpinner>
 
-          )}
           {(ticket.status === "closed") && (
             <ButtonWithSpinner
               //color="primary"
-              style={{ backgroundColor: 'red', color: 'white', padding: '0px', bottom: '0px', borderRadius: '0px', left: '8px', fontSize: '0.6rem' }}
+              style={{ backgroundColor: 'red', color: 'white', padding: '0px', bottom: '0px', borderRadius: '3px', left: '8px', fontSize: '0.6rem' }}
               variant="contained"
               className={classes.acceptButton}
               size="small"

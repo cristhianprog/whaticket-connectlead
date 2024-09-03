@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../../services/api";
 import { AuthContext } from "../../context/Auth/AuthContext";
@@ -32,15 +32,11 @@ const Kanban = () => {
   const [reloadData, setReloadData] = useState(false);
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
 
-
   const fetchTags = async () => {
     try {
       const response = await api.get("/tags/kanban");
       const fetchedTags = response.data.lista || []; 
-
       setTags(fetchedTags);
-
-      // Fetch tickets after fetching tags
       await fetchTickets(jsonString);
     } catch (error) {
       console.log(error);
@@ -55,7 +51,6 @@ const Kanban = () => {
     lanes: []
   });
 
-
   const [tickets, setTickets] = useState([]);
   const { user } = useContext(AuthContext);
   const { profile, queues } = user;
@@ -63,7 +58,6 @@ const Kanban = () => {
 
   const fetchTickets = async (jsonString) => {
     try {
-      
       const { data } = await api.get("/ticket/kanban", {
         params: {
           queueIds: JSON.stringify(jsonString),
@@ -77,10 +71,8 @@ const Kanban = () => {
     }
   };
 
-
   const popularCards = (jsonString) => {
     const filteredTickets = tickets.filter(ticket => ticket.tags.length === 0);
-
     const lanes = [
       {
         id: "lane0",
@@ -133,7 +125,6 @@ const Kanban = () => {
                 <button 
                   className={classes.button} 
                   onClick={() => {
-                    
                     handleCardClick(ticket.uuid)
                   }}>
                     Ver Ticket
@@ -153,37 +144,42 @@ const Kanban = () => {
   };
 
   const handleCardClick = (uuid) => {  
-    //console.log("Clicked on card with UUID:", uuid);
     history.push('/tickets/' + uuid);
   };
 
   useEffect(() => {
     popularCards(jsonString);
-}, [tags, tickets, reloadData]);
+  }, [tags, tickets, reloadData]);
 
   const handleCardMove = async (cardId, sourceLaneId, targetLaneId) => {
     try {
-        
-          await api.delete(`/ticket-tags/${targetLaneId}`);
-        toast.success('Ticket Tag Removido!');
-          await api.put(`/ticket-tags/${targetLaneId}/${sourceLaneId}`);
-        toast.success('Ticket Tag Adicionado com Sucesso!');
-
+      await api.delete(`/ticket-tags/${targetLaneId}`);
+      toast.success('Ticket Tag Removido!');
+      await api.put(`/ticket-tags/${targetLaneId}/${sourceLaneId}`);
+      toast.success('Ticket Tag Adicionado com Sucesso!');
     } catch (err) {
       console.log(err);
     }
   };
 
+  const handleLaneMove = (fromIndex, toIndex) => {
+    const lanes = Array.from(file.lanes);
+    const [movedLane] = lanes.splice(fromIndex, 1);
+    lanes.splice(toIndex, 0, movedLane);
+    setFile({ lanes });
+  };
+
   return (
     <div className={classes.root}>
       <Board 
-		data={file} 
-		onCardMoveAcrossLanes={handleCardMove}
-		style={{backgroundColor: 'rgba(252, 252, 252, 0.03)'}}
-    />
+        data={file} 
+        draggable 
+        onCardMoveAcrossLanes={handleCardMove}
+        onLaneMove={handleLaneMove}
+        style={{ backgroundColor: 'rgba(252, 252, 252, 0.03)' }}
+      />
     </div>
   );
 };
-
 
 export default Kanban;

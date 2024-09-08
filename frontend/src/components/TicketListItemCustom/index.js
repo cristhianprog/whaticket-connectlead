@@ -29,6 +29,7 @@ import MarkdownWrapper from "../MarkdownWrapper";
 
 import AndroidIcon from "@material-ui/icons/Android";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import ClearIcon from '@material-ui/icons/Clear';
 import ContactTag from "../ContactTag";
 import TicketMessagesDialog from "../TicketMessagesDialog";
 import { displayName } from "qrcode.react";
@@ -127,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   contactLastMessage: {
-    paddingRight: "0%",
+    paddingRight: "10%",
     marginLeft: "5px",
   },
 
@@ -432,7 +433,7 @@ const TicketListItemCustom = ({ ticket }) => {
           handleSelectTicket(ticket);
         }}
         selected={ticketId && +ticketId === ticket.id}
-        style={{ boxShadow: "2px 0px 5px 0px #7c7c7c", marginBottom: 1}}
+        style={{  boxShadow: "6px 11px 6px -11px #7c7c7cbd", marginBottom: 2}}
         className={clsx(classes.ticket, {
           [classes.pendingTicket]: ticket.status === "pending",
         })}
@@ -455,10 +456,10 @@ const TicketListItemCustom = ({ ticket }) => {
             :
             <Avatar
               style={{
-                marginTop: "-20px",
+                marginTop: "-12px",
                 marginLeft: "0px",
-                width: "56px",
-                height: "56px",
+                width: "58px",
+                height: "58px",
                 borderRadius: "50%",
               }}
               src={ticket?.contact?.profilePicUrl}
@@ -591,16 +592,26 @@ const TicketListItemCustom = ({ ticket }) => {
             )}
             <Typography>
               {(ticket.status !== "closed") && (
+
+                // <ClearIcon
+                // fontSize="small"
+                // style={{ backgroundColor: 'red', color: 'white', padding: '0px', bottom: '0px', borderRadius: '3px', left: '8px', fontSize: '0.6rem', width: 14, height: 14 }}
+                // className={classes.acceptButton}
+                // loading={loading}
+                // onClick={e => handleCloseTicket(ticket.id)}
+                // />
                 <ButtonWithSpinner
                   //color="primary"
-                  style={{ backgroundColor: 'red', color: 'white', padding: '0px', bottom: '0px', borderRadius: '3px', left: '8px', fontSize: '0.6rem' }}
+                  style={{ backgroundColor: 'red', color: 'white', padding: '0px', bottom: '0px', borderRadius: '3px', left: '8px', display:'contents' }}
                   variant="contained"
                   className={classes.acceptButton}
                   size="small"
                   loading={loading}
                   onClick={e => handleCloseTicket(ticket.id)}
                 >
-                  {i18n.t("ticketsList.buttons.closed")}
+                  <ClearIcon
+                    style={{ backgroundColor: 'red', color: 'white', fontSize: 16, borderRadius: 3}}
+                  />
                 </ButtonWithSpinner>
 
               )}
@@ -643,7 +654,7 @@ const TicketListItemCustom = ({ ticket }) => {
         </span>
       </ListItem>
 
-      <Divider variant="inset" component="li" />
+      {/* <Divider variant="inset" component="li" /> */}
     </React.Fragment>
   );
 };

@@ -76,6 +76,13 @@ frontend_set_env() {
   printf "${WHITE} 💻 Configurando variáveis de ambiente (frontend)...${GRAY_LIGHT}"
   printf "\n\n"
 
+  # Verifica se a variável 'instancia_add' é nula ou tem tamanho zero
+  if [ -z "$instancia_add" ]; then
+    printf "${WHITE} 💻 Digite o nome da Instância/Empresa que deseja Atualizar (Digite o mesmo nome de quando instalou):${GRAY_LIGHT}"
+    printf "\n\n"
+    read -p "> " instancia_add
+  fi
+
   sleep 2
 
   # ensure idempotency
@@ -115,9 +122,38 @@ EOF
 # Arguments:
 #   None
 #######################################
+frontend_start_pm2_update() {
+  print_banner
+  printf "${WHITE} 💻 Iniciando pm2 (frontend) já criado...${GRAY_LIGHT} - ${instancia_add}"
+  printf "\n\n"
+
+   # Verifica se a variável 'instancia_add' é nula ou tem tamanho zero
+  if [ -z "$instancia_add" ]; then
+    printf "${WHITE} 💻 Digite o nome da Instância/Empresa que deseja Atualizar (Digite o mesmo nome de quando instalou):${GRAY_LIGHT}"
+    printf "\n\n"
+    read -p "> " instancia_add
+  fi
+
+  sleep 2
+
+  sudo su - root <<EOF
+  cd /home/deploy/${instancia_add}/frontend
+  pm2 start ${instancia_add}-frontend
+EOF
+
+ sleep 2
+  
+ 
+}
+
+#######################################
+# starts pm2 for frontend
+# Arguments:
+#   None
+#######################################
 frontend_start_pm2() {
   print_banner
-  printf "${WHITE} 💻 Iniciando pm2 (frontend)...${GRAY_LIGHT}"
+  printf "${WHITE} 💻 Iniciando pm2 (frontend)...${GRAY_LIGHT} - ${instancia_add}"
   printf "\n\n"
 
    # Verifica se a variável 'instancia_add' é nula ou tem tamanho zero
@@ -130,7 +166,7 @@ frontend_start_pm2() {
 
   sleep 2
 
-  sudo su - deploy <<EOF
+  sudo su - root <<EOF
   cd /home/deploy/${instancia_add}/frontend
   pm2 start server.js --name ${instancia_add}-frontend
   pm2 save

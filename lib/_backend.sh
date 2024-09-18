@@ -211,9 +211,37 @@ EOF
 # Arguments:
 #   None
 #######################################
+backend_start_pm2_update() {
+  print_banner
+  printf "${WHITE} 💻 Iniciando pm2 (backend) já criado...${GRAY_LIGHT} - ${instancia_add}"
+  printf "\n\n"
+
+   # Verifica se a variável 'instancia_add' é nula ou tem tamanho zero
+  if [ -z "$instancia_add" ]; then
+    printf "${WHITE} 💻 Digite o nome da Instância/Empresa que deseja Atualizar (Digite o mesmo nome de quando instalou):${GRAY_LIGHT}"
+    printf "\n\n"
+    read -p "> " instancia_add
+  fi
+
+  sleep 2
+
+  sudo su - root <<EOF
+  cd /home/deploy/${instancia_add}/backend
+  pm2 start ${instancia_add}-backend
+EOF
+
+  sleep 2
+}
+
+#######################################
+# starts backend using pm2 in 
+# production mode.
+# Arguments:
+#   None
+#######################################
 backend_start_pm2() {
   print_banner
-  printf "${WHITE} 💻 Iniciando pm2 (backend)...${GRAY_LIGHT}"
+  printf "${WHITE} 💻 Iniciando pm2 (backend)...${GRAY_LIGHT} - ${instancia_add}"
   printf "\n\n"
 
    # Verifica se a variável 'instancia_add' é nula ou tem tamanho zero
@@ -226,7 +254,7 @@ backend_start_pm2() {
 
   sleep 2
 
-  sudo su - deploy <<EOF
+  sudo su - root <<EOF
   cd /home/deploy/${instancia_add}/backend
   pm2 start dist/server.js --name ${instancia_add}-backend
 EOF

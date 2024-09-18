@@ -19,9 +19,12 @@ get_mysql_root_password() {
 get_instancia_add() {
   
   print_banner
-  printf "${WHITE} 💻 Informe um nome para a Instância/Empresa que será instalada (Não utilizar espaços ou caracteres especiais; utilizar letras minusculas):${GRAY_LIGHT}"
-  printf "\n\n"
-  read -p "> " instancia_add
+  if [ -z "$empresa_atualizar" ]; then
+    printf "${WHITE} 💻 Informe um nome para a Instância/Empresa que será instalada (Não utilizar espaços ou caracteres especiais; utilizar letras minusculas):${GRAY_LIGHT}"
+    printf "\n\n"
+    read -p "> " instancia_add
+  fi
+  
 }
 
 get_max_whats() {
@@ -170,13 +173,15 @@ get_urls() {
 
 software_update() {
   get_empresa_atualizar
+  get_urls
+  clean_poject
   system_copy_project_update
+  frontend_set_env
+  backend_set_env
   frontend_update
   backend_update
-  frontend_start_pm2
-  backend_start_pm2
-  frontend_nginx_setup
-  frontend_nginx_setup
+  frontend_start_pm2_update
+  backend_start_pm2_update
 }
 
 software_delete() {
@@ -247,24 +252,51 @@ inquiry_options() {
 }
 
 
-system_copy_project_update() {
+clean_poject() {
   print_banner
-  printf "${WHITE} 💻 Copiando o Backend e Frontend...${GRAY_LIGHT}"
+  printf "${WHITE} 💻 Parando PM2 e limpando Projeto...${GRAY_LIGHT} - ${empresa_atualizar}"
   printf "\n"
-  printf "${WHITE} 💻 Informe um nome para a Instância/Empresa que será instalada (Não utilizar espaços ou caracteres especiais; utilizar letras minusculas):${GRAY_LIGHT}"
-  printf "\n\n"
-  read -p "> " empresa_atualizar
 
-  sleep 2
+  if [ -z "$empresa_atualizar" ]; then
+    printf "${WHITE} 💻 Informe um nome para a Instância/Empresa que será atualizado (Não utilizar espaços ou caracteres especiais; utilizar letras minusculas):${GRAY_LIGHT}"
+    printf "\n\n"
+    read -p "> " empresa_atualizar
+  fi
 
-  sudo su - root <<EOF
+sudo su - root <<EOF
   pm2 stop ${empresa_atualizar}-backend
   pm2 stop ${empresa_atualizar}-frontend
 
-  rm -r -f /home/deploy/${empresa_atualizar}/
-  mkdir /home/deploy/${empresa_atualizar}/
+  rm -r -f /home/deploy/${empresa_atualizar}
+
+  sleep 10
+
+  mkdir /home/deploy/${empresa_atualizar}
+
+ 
+EOF
+sleep 2
+
+}
+
+system_copy_project_update() {
+  print_banner
+  printf "${WHITE} 💻 Copiando o Backend e Frontend...${GRAY_LIGHT} do ${PROJECT_ROOT} para /home/deploy/${empresa_atualizar}/"
+  printf "\n"
+
+  if [ -z "$empresa_atualizar" ]; then
+    printf "${WHITE} 💻 Informe um nome para a Instância/Empresa que será atualizado (Não utilizar espaços ou caracteres especiais; utilizar letras minusculas):${GRAY_LIGHT}"
+    printf "\n\n"
+    read -p "> " empresa_atualizar
+  fi
+  
 
   sleep 2
+
+  
+
+  sudo su - root <<EOF
+  
 
   cp -r "${PROJECT_ROOT}"/backend /home/deploy/${empresa_atualizar}/
 
@@ -274,8 +306,8 @@ system_copy_project_update() {
 EOF
 
   sleep 2
-
-  sudo chmod -R 777 /home/deploy/${empresa_atualizar}/backend/public/
+  sudo chmod -R 777 /home/deploy/${empresa_atualizar}/
+  sudo chmod -R 777 /home/${PROJECT_ROOT}/
   sleep
 }
 
